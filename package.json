@@ -10,6 +10,9 @@
     "test": "node --test"
   },
   "keywords": ["kusto", "express", "scaffold", "create", "typescript"],
+  "repository": { "type": "git", "url": "git+https://github.com/taxi-tabby/express.js-kusto-scaffold.git" },
+  "bugs": { "url": "https://github.com/taxi-tabby/express.js-kusto-scaffold/issues" },
+  "homepage": "https://github.com/taxi-tabby/express.js-kusto-scaffold#readme",
   "license": "ISC",
   "author": "rkdmf0000@gmail.com",
   "dependencies": {
