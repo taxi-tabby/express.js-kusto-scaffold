@@ -1,0 +1,23 @@
+{
+  "name": "create-kusto-app",
+  "version": "0.1.0",
+  "description": "Scaffold a new Express.js-Kusto project.",
+  "type": "module",
+  "bin": { "create-kusto-app": "bin/cli.js" },
+  "files": ["bin", "src", "README.md"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": ["kusto", "express", "scaffold", "create", "typescript"],
+  "repository": { "type": "git", "url": "git+https://github.com/taxi-tabby/express.js-kusto-scaffold.git" },
+  "bugs": { "url": "https://github.com/taxi-tabby/express.js-kusto-scaffold/issues" },
+  "homepage": "https://github.com/taxi-tabby/express.js-kusto-scaffold#readme",
+  "license": "ISC",
+  "author": "rkdmf0000@gmail.com",
+  "dependencies": {
+    "giget": "^1.2.3",
+    "picocolors": "^1.1.1",
+    "prompts": "^2.4.2"
+  }
+}
