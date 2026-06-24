@@ -1,7 +1,6 @@
 // src/index.js
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { basename } from 'node:path';
 import { parseArgs, HELP_TEXT, promptMissing } from './cli.js';
 import { download } from './download.js';
 import { transform } from './transform.js';

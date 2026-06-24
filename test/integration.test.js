@@ -32,6 +32,7 @@ test('backend-only scaffold: prunes react, no react files', async () => {
   assert.equal(pkg.name, 'my-app');
   assert.equal(pkg.dependencies.react, undefined);
   assert.equal(await exists(join(target, '.env')), true);
+  // react.ts is created ONLY by the react applier (see the react scenario); backend-only must not run it.
   assert.equal(await exists(join(target, 'src/app/extensions/react.ts')), false);
 });
 
@@ -44,6 +45,14 @@ test('react scaffold: keeps react deps and writes sample page', async () => {
   assert.equal(pkg.dependencies.react, '^19.2.7');
   assert.equal(await exists(join(target, 'src/app/views/Home.tsx')), true);
   assert.equal(await exists(join(target, 'src/app/routes/app/route.ts')), true);
+  // Assert file CONTENT to ensure the react applier actually ran
+  assert.equal(await exists(join(target, 'src/app/extensions/react.ts')), true);
+  const activation = await readFile(join(target, 'src/app/extensions/react.ts'), 'utf8');
+  assert.match(activation, /from '@expressjs-kusto\/react'/);
+  const home = await readFile(join(target, 'src/app/views/Home.tsx'), 'utf8');
+  assert.match(home, /export default function Home/);
+  const route = await readFile(join(target, 'src/app/routes/app/route.ts'), 'utf8');
+  assert.match(route, /GET_REACT\('Home'/);
 });
 
 test('non-empty target dir is rejected', async () => {
