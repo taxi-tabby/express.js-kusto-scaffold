@@ -1,3 +1,8 @@
+import promptsLib from 'prompts';
+import { basename } from 'node:path';
+import { extensions as registryExtensions } from './extensions/registry.js';
+import { detectPackageManager } from './utils/pm.js';
+
 const PM_VALUES = new Set(['npm', 'pnpm', 'yarn']);
 
 export function parseArgs(argv) {
@@ -26,7 +31,12 @@ export function parseArgs(argv) {
         o.pm = v;
         break;
       }
-      case '--ref': o.ref = argv[++i]; break;
+      case '--ref': {
+        const v = argv[++i];
+        if (v === undefined) throw new Error('--ref requires a value');
+        o.ref = v;
+        break;
+      }
       case '-y':
       case '--yes': o.yes = true; break;
       case '-h':
@@ -58,11 +68,6 @@ Options:
   -h, --help            show this help
   -v, --version         print version
 `;
-
-import promptsLib from 'prompts';
-import { basename } from 'node:path';
-import { extensions as registryExtensions } from './extensions/registry.js';
-import { detectPackageManager } from './utils/pm.js';
 
 export async function promptMissing(options, prompter = promptsLib) {
   if (options.yes) {

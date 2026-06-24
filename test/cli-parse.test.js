@@ -28,3 +28,11 @@ test('help and version flags', () => {
   assert.equal(parseArgs(['--help']).help, true);
   assert.equal(parseArgs(['-v']).version, true);
 });
+
+test('--ref without a value throws', () => {
+  assert.throws(() => parseArgs(['--ref']), /--ref requires a value/);
+});
+test('help/version aliases both parse', () => {
+  assert.equal(parseArgs(['-h']).help, true);
+  assert.equal(parseArgs(['--version']).version, true);
+});

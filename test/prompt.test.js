@@ -1,7 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { promptMissing } from '../src/cli.js';
-import { parseArgs } from '../src/cli.js';
+import { promptMissing, parseArgs } from '../src/cli.js';
 
 test('yes mode uses defaults, no prompter calls', async () => {
   const prompter = async () => { throw new Error('should not prompt'); };
