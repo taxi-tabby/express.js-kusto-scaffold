@@ -7,7 +7,10 @@
   "files": ["bin", "src", "README.md"],
   "engines": { "node": ">=20" },
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "login": "npm login",
+    "release": "npm publish --access public",
+    "prepublishOnly": "node --test"
   },
   "keywords": ["kusto", "express", "scaffold", "create", "typescript"],
   "repository": { "type": "git", "url": "git+https://github.com/taxi-tabby/express.js-kusto-scaffold.git" },
