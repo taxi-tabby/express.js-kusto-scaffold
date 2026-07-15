@@ -1,6 +1,6 @@
 {
   "name": "create-kusto-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Scaffold a new Express.js-Kusto project.",
   "type": "module",
   "bin": { "create-kusto-app": "bin/cli.js" },

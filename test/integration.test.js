@@ -23,6 +23,13 @@ function makeFakeDownloader() {
 const noopRunner = async () => {};
 const exists = async (p) => { try { await access(p); return true; } catch { return false; } };
 
+// Deterministic stand-in for the npm registry so tests never touch the network.
+const fakeLatest = {
+  react: '19.5.0', 'react-dom': '19.5.0', 'react-router-dom': '7.9.0',
+  'lucide-react': '1.9.0', '@expressjs-kusto/react': '0.9.0',
+};
+const fakeResolveLatest = async (name) => fakeLatest[name] ?? null;
+
 test('backend-only scaffold: prunes react, no react files', async () => {
   const base = await mkdtemp(join(tmpdir(), 'cka-int-'));
   const target = join(base, 'my-app');
@@ -39,10 +46,12 @@ test('backend-only scaffold: prunes react, no react files', async () => {
 test('react scaffold: keeps react deps and writes sample page', async () => {
   const base = await mkdtemp(join(tmpdir(), 'cka-int-'));
   const target = join(base, 'react-app');
-  const code = await run([target, '-y', '--react', '--no-install', '--no-git'], { downloader: makeFakeDownloader(), runner: noopRunner });
+  const code = await run([target, '-y', '--react', '--no-install', '--no-git'], { downloader: makeFakeDownloader(), runner: noopRunner, resolveLatest: fakeResolveLatest });
   assert.equal(code, 0);
   const pkg = JSON.parse(await readFile(join(target, 'package.json'), 'utf8'));
-  assert.equal(pkg.dependencies.react, '^19.2.7');
+  // React deps are refreshed to the latest published versions (caret-pinned).
+  assert.equal(pkg.dependencies.react, '^19.5.0');
+  assert.equal(pkg.dependencies['@expressjs-kusto/react'], '^0.9.0');
   assert.equal(await exists(join(target, 'src/app/views/Home.tsx')), true);
   assert.equal(await exists(join(target, 'src/app/routes/app/route.ts')), true);
   // Assert file CONTENT to ensure the react applier actually ran
@@ -53,6 +62,30 @@ test('react scaffold: keeps react deps and writes sample page', async () => {
   assert.match(home, /export default function Home/);
   const route = await readFile(join(target, 'src/app/routes/app/route.ts'), 'utf8');
   assert.match(route, /GET_REACT\('Home'/);
+});
+
+test('react scaffold with no injected resolver uses the default npm resolver (real wiring)', async () => {
+  const base = await mkdtemp(join(tmpdir(), 'cka-int-'));
+  const target = join(base, 'default-resolver-app');
+  const realFetch = globalThis.fetch;
+  // Stub the registry so the DEFAULT path (index.js -> versions.js -> fetch) runs offline.
+  // This guards the `?? defaultResolveLatest` wiring: without it, production silently stops
+  // refreshing versions while every other test stays green.
+  globalThis.fetch = async (url) => {
+    const m = /registry\.npmjs\.org\/(.+)\/latest$/.exec(url);
+    const name = m ? decodeURIComponent(m[1]) : '';
+    const version = name === '@expressjs-kusto/react' ? '0.9.0' : '99.0.0';
+    return { ok: true, json: async () => ({ version }) };
+  };
+  try {
+    const code = await run([target, '-y', '--react', '--no-install', '--no-git'], { downloader: makeFakeDownloader(), runner: noopRunner });
+    assert.equal(code, 0);
+    const pkg = JSON.parse(await readFile(join(target, 'package.json'), 'utf8'));
+    assert.equal(pkg.dependencies.react, '^99.0.0');
+    assert.equal(pkg.dependencies['@expressjs-kusto/react'], '^0.9.0');
+  } finally {
+    globalThis.fetch = realFetch;
+  }
 });
 
 test('non-empty target dir is rejected', async () => {

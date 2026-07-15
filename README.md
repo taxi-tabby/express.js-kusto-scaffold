@@ -35,7 +35,10 @@ create-kusto-app [directory] [options]
 ## What you get
 
 - The Express.js-Kusto backend framework (TypeScript, convention-based routing, multi-DB Prisma, CRUD generator).
-- Optionally, a minimal working React page wired through the `@expressjs-kusto/react` extension.
+- Optionally, a minimal working React page wired through the `@expressjs-kusto/react` extension. Its
+  dependencies (`react`, `react-dom`, `react-router-dom`, `lucide-react`, `@expressjs-kusto/react`) are
+  pinned to their latest published versions at scaffold time — if the npm registry is unreachable, the
+  template's bundled versions are kept.
 
 ## Requirements
 

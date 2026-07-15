@@ -5,6 +5,7 @@ import { parseArgs, HELP_TEXT, promptMissing } from './cli.js';
 import { download } from './download.js';
 import { transform } from './transform.js';
 import { finalize } from './finalize.js';
+import { resolveLatest as defaultResolveLatest } from './versions.js';
 import { getExtension } from './extensions/registry.js';
 import { isEmptyDir } from './utils/fs.js';
 import { log } from './utils/log.js';
@@ -39,7 +40,10 @@ export async function run(argv, deps = {}) {
     await download({ ref: resolved.ref, targetDir: resolved.targetDir }, deps.downloader);
 
     log.step('Configuring project ...');
-    await transform({ targetDir: resolved.targetDir, projectName: resolved.projectName, extensions: resolved.extensions });
+    await transform(
+      { targetDir: resolved.targetDir, projectName: resolved.projectName, extensions: resolved.extensions },
+      { resolveLatest: deps.resolveLatest ?? defaultResolveLatest },
+    );
 
     for (const extId of resolved.extensions) {
       const ext = getExtension(extId);
