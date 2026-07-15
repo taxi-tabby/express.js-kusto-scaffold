@@ -5,10 +5,17 @@ export const id = 'react';
 export const label = 'React frontend (SSR/CSR)';
 
 const ACTIVATION = `import { react } from '@expressjs-kusto/react';
+import type { ReactRouteOptions } from '@expressjs-kusto/react';
 
-// Turns on the React extension: registers router.GET_REACT(...) and SSR/CSR.
-// Pages live in src/app/views/ as default-exported components.
-export default react({});
+declare module '@lib/http/routing/expressRouter' {
+    interface ExpressRouter {
+        GET_REACT(component: string, options?: ReactRouteOptions): this;
+    }
+}
+
+export default react({
+    ssr: true
+});
 `;
 
 const HOME_PAGE = `// src/app/views/Home.tsx — minimal default-exported page (SSR-safe).
